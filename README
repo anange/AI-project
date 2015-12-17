@@ -1,0 +1,3 @@
+A programming assignment in Java for the course of Artificial Intelligence.
+
+Objective is to make two Robots meet while passing certain checkpoints and return to their starting positions, avoiding conflicts at all times.
