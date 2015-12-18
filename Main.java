@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
     
@@ -62,7 +63,9 @@ public class Main {
                 else
                     empty[i][j] = true;
         }
-        
+        // Sorts midpoints according to what is closer to 
+        // the previous one
+        // TODO TESTING
         min = manhDist(start1, midpoints[0]);
         which = start1;
         for (i = 0; i < numOfMids; i++) {
@@ -79,8 +82,17 @@ public class Main {
             midpoints[next] = temp;
             which = midpoints[i];
         }
-
-//         Monopati me metavlites point kai step  = Astar(start1, midpoints[0])
+/*      
+ *      int step = 0;
+ *      ArrayList<Point> FirstPath;
+ *      Astar astar = new Astar(start1, midpoints[0], step);
+ *      FirstPath = astar.solve();
+ *      for (i = 1; i < numOfMids; i++) {
+ *          step = FirstPath.get(FirstPath.size() - 1).getStep() + 1;
+ *          astar = new Astar(midpoints[i-1], midpoints[i], step);
+ *          FirstPath = FirstPath.addAll(astar.solve());
+ *      }
+ */
 
     }
     
