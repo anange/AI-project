@@ -20,7 +20,7 @@ public class Point {
         return this.step;
     }
 
-    public int setStep(int s) {
+    public void setStep(int s) {
         this.step = s;
     }
 }
