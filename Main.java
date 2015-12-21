@@ -26,16 +26,16 @@ public class Main {
         m = Integer.parseInt(help[1]);
 
         help = read(reader);
-        start1 = new Point(Integer.parseInt(help[0]),
-                           Integer.parseInt(help[1]));
+        start1 = new Point(Integer.parseInt(help[0]) - 1,
+                           Integer.parseInt(help[1]) - 1);
 
         help = read(reader);
-        start2 = new Point(Integer.parseInt(help[0]), 
-                           Integer.parseInt(help[1]));
+        start2 = new Point(Integer.parseInt(help[0]) - 1, 
+                           Integer.parseInt(help[1]) - 1);
 
         help = read(reader);
-        goal = new Point(Integer.parseInt(help[0]), 
-                         Integer.parseInt(help[1]));
+        goal = new Point(Integer.parseInt(help[0]) - 1, 
+                         Integer.parseInt(help[1]) - 1);
 
         help = read(reader);
         numOfMids = Integer.parseInt(help[0]);
@@ -43,8 +43,8 @@ public class Main {
         Point[] midpoints = new Point[numOfMids];
         for (i = 0; i < numOfMids; i++) {
             help = read(reader);
-            midpoints[i] = new Point(Integer.parseInt(help[0]), 
-                                     Integer.parseInt(help[1]));
+            midpoints[i] = new Point(Integer.parseInt(help[0]) - 1, 
+                                     Integer.parseInt(help[1]) - 1);
         }
 
         boolean[][] empty = new boolean[n][m];
@@ -81,18 +81,29 @@ public class Main {
             midpoints[i] = midpoints[next];
             midpoints[next] = temp;
             which = midpoints[i];
+            if (i + 1 < numOfMids)
+                min = manhDist(midpoints[next], midpoints[i+1]);
         }
-/*      
- *      int step = 0;
- *      ArrayList<Point> FirstPath;
- *      Astar astar = new Astar(start1, midpoints[0], step);
- *      FirstPath = astar.solve();
- *      for (i = 1; i < numOfMids; i++) {
- *          step = FirstPath.get(FirstPath.size() - 1).getStep() + 1;
- *          astar = new Astar(midpoints[i-1], midpoints[i], step);
- *          FirstPath = FirstPath.addAll(astar.solve());
- *      }
- */
+      
+        int step = 0;
+        ArrayList<Point> FirstPath;
+        Astar astar = new Astar(start1, midpoints[0], step, empty);
+        FirstPath = astar.solve();
+        /*for (i = 0; i < FirstPath.size(); i++)
+            System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1));
+        */
+        
+        for (i = 1; i < numOfMids; i++) {
+
+          step = FirstPath.get(FirstPath.size() - 1).getStep();
+          FirstPath.remove(FirstPath.size() - 1);
+          astar = new Astar(midpoints[i-1], midpoints[i], step, empty);
+          FirstPath.addAll(astar.solve());
+        }
+        for (i = 0; i < FirstPath.size(); i++)
+            System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1) + " " + FirstPath.get(i).getStep());
+
+
 
     }
     
