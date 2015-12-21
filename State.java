@@ -41,6 +41,11 @@ public class State {
         return this.step;
     }
 
+    public void incStep() {
+        this.step += 1;
+        return;
+    }
+
     public Point getSq() {
         return this.Square;
     }
