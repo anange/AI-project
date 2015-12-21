@@ -8,13 +8,15 @@ public class Astar {
     private int n;
     private int m;
     private boolean[][] visited;
+    private ArrayList<Point> FirstPath;
 
     private PriorityQueue<State> states;
 
-    public Astar(Point s, Point gl, int step, boolean[][] em) {
+    public Astar(Point s, Point gl, int step, boolean[][] em, ArrayList<Point> FstPath) {
         this.start = s;
         this.goal = gl;
         this.empty = em;
+		this.FirstPath = FstPath;
         this.n = this.empty.length;
         this.m = this.empty[0].length;
         this.visited = new boolean[this.n][this.m];
@@ -32,6 +34,33 @@ public class Astar {
         Point temp;
         while (true) {
             cur = this.states.poll();
+
+            if (this.FirstPath != null) {
+                temp = FirstPath.get(cur.getStep());
+                if (cur.getSq().x == temp.x && cur.getSq().y == temp.y) {
+                    System.out.println("** Conflict **");
+                    System.out.println("Robot 1 considering new position <" + (cur.getSq().x + 1) + "," + (cur.getSq().y + 1) +
+                                       "> at step " + cur.getStep());
+                    System.out.println("Robot 2 considering new position <" + (cur.getSq().x + 1) + "," + (cur.getSq().y + 1) + 
+                                       "> at step " + cur.getStep());
+				
+                    if ((cur.getSq().x == goal.x && cur.getSq().y == goal.y) || (this.states.peek() == null)) {
+						System.out.println("Resolving -- Robot 2 considering stalling at step " + (cur.getStep()));
+						cur.incStep();
+						this.states.add(cur);		
+					}
+                    else {
+						System.out.println("Resolving -- Robot 2 considering new alternative position <" + (this.states.peek().getSq().x + 1) + "," + (this.states.peek().getSq().y + 1) + "> at step " + (cur.getStep() + 1));
+                        this.visited[cur.getSq().x][cur.getSq().y] = false;
+                    }
+                    System.out.println("** End of Conflict **");
+                    continue;
+                }
+            }
+
+
+                
+
             if (cur == null) {
                 System.out.println("Impossible!");
                 System.exit(0);
