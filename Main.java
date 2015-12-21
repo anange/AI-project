@@ -63,47 +63,49 @@ public class Main {
                 else
                     empty[i][j] = true;
         }
-        // Sorts midpoints according to what is closer to 
-        // the previous one
-        // TODO TESTING
-        min = manhDist(start1, midpoints[0]);
-        which = start1;
-        for (i = 0; i < numOfMids; i++) {
-            next = i;
-            for (j = i+1; j < numOfMids; j++) {
-                cur = manhDist(which, midpoints[j]);
-                if (cur < min) {
-                    min = cur;
-                    next = j;
-                }
-            }
-            temp = midpoints[i];
-            midpoints[i] = midpoints[next];
-            midpoints[next] = temp;
-            which = midpoints[i];
-            if (i + 1 < numOfMids)
-                min = manhDist(midpoints[next], midpoints[i+1]);
-        }
-      
+        sortMidpoints(start1, midpoints, numOfMids);
         int step = 0;
         ArrayList<Point> FirstPath;
-        Astar astar = new Astar(start1, midpoints[0], step, empty);
+        Astar astar = new Astar(start1, midpoints[0], step, empty, null);
         FirstPath = astar.solve();
         /*for (i = 0; i < FirstPath.size(); i++)
             System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1));
         */
         
-        for (i = 1; i < numOfMids; i++) {
+        for (i = 1; i <= numOfMids; i++) {
 
-          step = FirstPath.get(FirstPath.size() - 1).getStep();
-          FirstPath.remove(FirstPath.size() - 1);
-          astar = new Astar(midpoints[i-1], midpoints[i], step, empty);
-          FirstPath.addAll(astar.solve());
+            if (i == numOfMids)
+                temp = goal;
+            else
+                temp = midpoints[i];
+            step = FirstPath.get(FirstPath.size() - 1).getStep();
+            FirstPath.remove(FirstPath.size() - 1);
+            astar = new Astar(midpoints[i-1], temp, step, empty, null);
+            FirstPath.addAll(astar.solve());
         }
+        
         for (i = 0; i < FirstPath.size(); i++)
             System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1) + " " + FirstPath.get(i).getStep());
 
+        sortMidpoints(start2, midpoints, numOfMids);
+        step = 0;
+        ArrayList<Point> SecPath;
+        astar = new Astar(start2, midpoints[0], step, empty, FirstPath);
+        SecPath = astar.solve();
+        for (i = 1; i <= numOfMids; i++) {
 
+            if (i == numOfMids) {
+                temp = new Point(goal.x,  goal.y - 1);
+			}
+            else
+                temp = midpoints[i];
+            step = SecPath.get(SecPath.size() - 1).getStep();
+            SecPath.remove(SecPath.size() - 1);
+            astar = new Astar(midpoints[i-1], temp, step, empty, FirstPath);
+            SecPath.addAll(astar.solve());
+        }
+        for (i = 0; i < SecPath.size(); i++)
+            System.out.println(SecPath.get(i).x + 1 + " " + (SecPath.get(i).y + 1) + " " + SecPath.get(i).getStep());
 
     }
     
@@ -119,8 +121,34 @@ public class Main {
         String[] nums = line.split(" ");
         return nums;
     }
+    
+    // Sorts midpoints according to what is closer to 
+    // the previous one
+    private static void sortMidpoints(Point start, Point[] midPoints, int numOfMids) {
+        int min, i, next, j, cur;
+        Point which, temp;
+		min = manhDist(start, midPoints[0]);
+        which = start;
+        for (i = 0; i < numOfMids; i++) {
+            next = i;
+            for (j = i+1; j < numOfMids; j++) {
+                cur = manhDist(which, midPoints[j]);
+                if (cur < min) {
+                    min = cur;
+                    next = j;
+                }
+            }
+            temp = midPoints[i];
+            midPoints[i] = midPoints[next];
+            midPoints[next] = temp;
+            which = midPoints[i];
+            if (i + 1 < numOfMids)
+                min = manhDist(midPoints[next], midPoints[i+1]);
+        }
+    }
 
     private static int manhDist(Point a, Point b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
+    
 }
