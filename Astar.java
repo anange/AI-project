@@ -4,7 +4,6 @@ public class Astar {
     
     private Point start;
     private Point goal;
-    private int step;
     private boolean[][] empty;
     private int n;
     private int m;
@@ -12,10 +11,9 @@ public class Astar {
 
     private PriorityQueue<State> states;
 
-    public Astar(Point s, Point gl, int st, boolean[][] em) {
+    public Astar(Point s, Point gl, int step, boolean[][] em) {
         this.start = s;
         this.goal = gl;
-        this.step = st;
         this.empty = em;
         this.n = this.empty.length;
         this.m = this.empty[0].length;
@@ -24,13 +22,14 @@ public class Astar {
 
         Comparator<State> comp = new StateComparator();
         this.states = new PriorityQueue<State>(1000, comp);
-        State root = new State(this.start, this.goal);
+        State root = new State(this.start, this.goal, step);
         this.states.add(root);
     }
 
     public ArrayList<Point> solve() {
         
         State cur;
+        Point temp;
         while (true) {
             cur = this.states.poll();
             if (cur == null) {
@@ -41,11 +40,16 @@ public class Astar {
             if (cur.getSq().x == goal.x && cur.getSq().y == goal.y) {
                 //TODO function that builds arraylist to return
                 ArrayList<Point> path = new ArrayList<Point>();
-                path.add(cur.getSq());
+                temp = cur.getSq();
+                temp.setStep(cur.getStep());
+                path.add(temp);
                 while (cur.getParent() != null) {
                     cur = cur.getParent();
-                    path.add(cur.getSq());
+                    temp = cur.getSq();
+                    temp.setStep(cur.getStep());
+                    path.add(temp);
                 }
+                Collections.reverse(path);
                 return path;
             }
             else {
@@ -79,7 +83,7 @@ public class Astar {
         }
         for (int i = 0; i < numOfNew; i++) {
             State temp = new State(cur, nextSquares[i], this.goal);
-            this.visited[x][y] = true; //valto visited edw?
+            this.visited[nextSquares[i].x][nextSquares[i].y] = true; //valto visited edw?
             this.states.add(temp);
         }
     }        
