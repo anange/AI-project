@@ -20,10 +20,10 @@ public class State {
         this.h = dist(this.Square, goal);
     }
 
-    public State(Point sq, Point goal) {
+    public State(Point sq, Point goal, int st) {
         this.parent = null;
         this.Square = sq;
-        this.g = 0;
+        this.g = st;
         this.step = this.g;
         this.h = dist(this.Square, goal);
     }
