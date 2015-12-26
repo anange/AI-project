@@ -85,10 +85,7 @@ public class Main {
             FirstPath.addAll(astar.solve());
         }
         
-        for (i = 0; i < FirstPath.size(); i++)
-            System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1) + " " + FirstPath.get(i).getStep());
-
-        sortMidpoints(start2, midpoints, numOfMids);
+                sortMidpoints(start2, midpoints, numOfMids);
         step = 0;
         ArrayList<Point> SecPath;
         astar = new Astar(start2, midpoints[0], fingoal, step, empty, FirstPath);
@@ -106,10 +103,35 @@ public class Main {
             astar = new Astar(midpoints[i-1], temp, fingoal, step, empty, FirstPath);
             SecPath.addAll(astar.solve());
         }
-        for (i = 0; i < SecPath.size(); i++)
-            System.out.println(SecPath.get(i).x + 1 + " " + (SecPath.get(i).y + 1) + " " + SecPath.get(i).getStep());
-
-    }
+       
+        ArrayList<Point> FirstPathBack, SecPathBack;
+        fingoal = false;
+        step = Math.max(FirstPath.get(FirstPath.size() - 1).getStep(), 
+                        SecPath.get(SecPath.size() - 1).getStep());
+        astar = new Astar(goal, start1, fingoal, step, empty, null);
+        FirstPathBack = astar.solve();
+        astar = new Astar(SecPath.get(SecPath.size() - 1),
+                          start2, fingoal, step, empty, FirstPathBack);
+        SecPathBack = astar.solve();
+        System.out.println("First Robot | Second Robot | Step");
+        for (i = 0; i <= step; i++) {
+            if (i >= FirstPath.size())
+                System.out.print("Wait for 2nd");
+            else
+                System.out.print("    (" + (FirstPath.get(i).x + 1) + "," + (FirstPath.get(i).y + 1) + ")   ");
+            
+            if (i >= SecPath.size())
+                System.out.println(" Wait for 1st" + SecPath.get(i).getStep());
+            else if (i > 0 && SecPath.get(i).getStep() - SecPath.get(i).getStep() > 1) 
+                System.out.println("    Stalling    " + SecPath.get(i).getStep());
+            else
+                System.out.println("     (" + (SecPath.get(i).x + 1) + " " + (SecPath.get(i).y + 1) + ")" + "         " + SecPath.get(i).getStep());
+        }
+        for (i = 1; i < FirstPathBack.size(); i++) {
+           System.out.print("    (" + (FirstPathBack.get(i).x + 1) + "," + (FirstPathBack.get(i).y + 1) + ")   ");
+           System.out.println("     (" + (SecPathBack.get(i).x + 1) + " " + (SecPathBack.get(i).y + 1) + ")" + "         " + SecPathBack.get(i).getStep());
+        }
+    }           
     
     private static String[] read(BufferedReader r) {
         String line;
