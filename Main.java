@@ -65,8 +65,9 @@ public class Main {
         }
         sortMidpoints(start1, midpoints, numOfMids);
         int step = 0;
+        boolean fingoal = false;
         ArrayList<Point> FirstPath;
-        Astar astar = new Astar(start1, midpoints[0], step, empty, null);
+        Astar astar = new Astar(start1, midpoints[0], fingoal, step, empty, null);
         FirstPath = astar.solve();
         /*for (i = 0; i < FirstPath.size(); i++)
             System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1));
@@ -80,7 +81,7 @@ public class Main {
                 temp = midpoints[i];
             step = FirstPath.get(FirstPath.size() - 1).getStep();
             FirstPath.remove(FirstPath.size() - 1);
-            astar = new Astar(midpoints[i-1], temp, step, empty, null);
+            astar = new Astar(midpoints[i-1], temp, fingoal, step, empty, null);
             FirstPath.addAll(astar.solve());
         }
         
@@ -90,18 +91,19 @@ public class Main {
         sortMidpoints(start2, midpoints, numOfMids);
         step = 0;
         ArrayList<Point> SecPath;
-        astar = new Astar(start2, midpoints[0], step, empty, FirstPath);
+        astar = new Astar(start2, midpoints[0], fingoal, step, empty, FirstPath);
         SecPath = astar.solve();
         for (i = 1; i <= numOfMids; i++) {
 
             if (i == numOfMids) {
-                temp = new Point(goal.x,  goal.y - 1);
+                fingoal = true;
+                temp = goal;
 			}
             else
                 temp = midpoints[i];
             step = SecPath.get(SecPath.size() - 1).getStep();
             SecPath.remove(SecPath.size() - 1);
-            astar = new Astar(midpoints[i-1], temp, step, empty, FirstPath);
+            astar = new Astar(midpoints[i-1], temp, fingoal, step, empty, FirstPath);
             SecPath.addAll(astar.solve());
         }
         for (i = 0; i < SecPath.size(); i++)
