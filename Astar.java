@@ -8,13 +8,15 @@ public class Astar {
     private int n;
     private int m;
     private boolean[][] visited;
+    private boolean finalgoal;
     private ArrayList<Point> FirstPath;
 
     private PriorityQueue<State> states;
 
-    public Astar(Point s, Point gl, int step, boolean[][] em, ArrayList<Point> FstPath) {
+    public Astar(Point s, Point gl, boolean fingl, int step, boolean[][] em, ArrayList<Point> FstPath) {
         this.start = s;
         this.goal = gl;
+        this.finalgoal = fingl;
         this.empty = em;
 		this.FirstPath = FstPath;
         this.n = this.empty.length;
@@ -31,42 +33,70 @@ public class Astar {
     public ArrayList<Point> solve() {
         
         State cur;
-        Point temp;
+        Point temp, prev;
+        int x, y;
         while (true) {
             cur = this.states.poll();
-
-            if (this.FirstPath != null) {
-                temp = FirstPath.get(cur.getStep());
-                if (cur.getSq().x == temp.x && cur.getSq().y == temp.y) {
-                    System.out.println("** Conflict **");
-                    System.out.println("Robot 1 considering new position <" + (cur.getSq().x + 1) + "," + (cur.getSq().y + 1) +
-                                       "> at step " + cur.getStep());
-                    System.out.println("Robot 2 considering new position <" + (cur.getSq().x + 1) + "," + (cur.getSq().y + 1) + 
-                                       "> at step " + cur.getStep());
-				
-                    if ((cur.getSq().x == goal.x && cur.getSq().y == goal.y) || (this.states.peek() == null)) {
-						System.out.println("Resolving -- Robot 2 considering stalling at step " + (cur.getStep()));
-						cur.incStep();
-						this.states.add(cur);		
-					}
-                    else {
-						System.out.println("Resolving -- Robot 2 considering new alternative position <" + (this.states.peek().getSq().x + 1) + "," + (this.states.peek().getSq().y + 1) + "> at step " + (cur.getStep() + 1));
-                        this.visited[cur.getSq().x][cur.getSq().y] = false;
-                    }
-                    System.out.println("** End of Conflict **");
-                    continue;
-                }
-            }
-
-
-                
-
+ 
             if (cur == null) {
                 System.out.println("Impossible!");
                 System.exit(0);
             }
-            
-            if (cur.getSq().x == goal.x && cur.getSq().y == goal.y) {
+            x = cur.getSq().x;
+            y = cur.getSq().y;
+
+            if (this.FirstPath != null) {
+                if (cur.getStep() >= FirstPath.size() ||
+                    cur.getStep() == 0) {
+                    temp = FirstPath.get(FirstPath.size() - 1); 
+                    prev = null;
+                }
+                else {
+                    temp = FirstPath.get(cur.getStep());
+                    prev = FirstPath.get(cur.getStep() - 1);
+                }
+                if (x == temp.x && y == temp.y) {
+                    System.out.println("** Conflict **");
+                    System.out.println("Robot 1 considering new position <" + (x + 1) + "," + (y + 1) +
+                                       "> at step " + cur.getStep());
+                    System.out.println("Robot 2 considering new position <" + (x + 1) + "," + (y + 1) + "> at step " + cur.getStep());
+				
+                    if ((x == goal.x && y == goal.y) 
+                        || (this.finalgoal && manhDist(cur.getSq(), this.goal) == 1)
+                        || (this.states.peek() == null)) {
+						System.out.println("Resolving -- Robot 2 considering stalling at step " 
+                            + (cur.getStep()));
+						cur.incStep();
+						this.states.add(cur);		
+					}
+                    else {
+						System.out.println("Resolving -- Robot 2 considering new alternative position <" + (this.states.peek().getSq().x + 1) + "," + (this.states.peek().getSq().y + 1) + "> at step " + (this.states.peek().getStep()));
+                        this.visited[x][y] = false;
+                    }
+                    System.out.println("** End of Conflict **");
+                    continue;
+                }
+                else if (prev != null && 
+                        x == prev.x && y == prev.y &&
+                        cur.getParent().getSq().x == temp.x && cur.getParent().getSq().y == temp.y) {
+                    System.out.println("Conflict -- Danger of crashing");
+                    System.out.println("Robot 1 considering new position <" + (x + 1) + "," + (y + 1) +
+                                       "> at step " + (cur.getStep() - 1));
+                    System.out.println("Robot 2 considering new position <" + (x + 1) + "," + (y + 1) + "> at step " + cur.getStep()); 
+                    if (this.states.peek() == null) { 
+                        System.out.println("Impossible to resolve");
+                        System.exit(0);
+                    }
+                    else {
+                        System.out.println("Resolving -- Robot 2 considering new alternative position <" + (this.states.peek().getSq().x + 1) + "," + (this.states.peek().getSq().y + 1) + "> at step " + (this.states.peek().getStep()));
+                        this.visited[x][y] = false;
+                        System.out.println("** End of Conflict **");
+                        continue;
+                    }
+                }
+            }
+
+            if (x == goal.x && y == goal.y || (this.finalgoal && manhDist(cur.getSq(), this.goal) == 1)) {
                 //TODO function that builds arraylist to return
                 ArrayList<Point> path = new ArrayList<Point>();
                 temp = cur.getSq();
@@ -115,7 +145,12 @@ public class Astar {
             this.visited[nextSquares[i].x][nextSquares[i].y] = true; //valto visited edw?
             this.states.add(temp);
         }
-    }        
+    }
+    
+    private static int manhDist(Point a, Point b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+    
 }
 
     
