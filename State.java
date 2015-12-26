@@ -17,7 +17,10 @@ public class State {
         this.Square = sq;
         this.g = this.parent.getStep() + 1;
         this.step = this.g;
-        this.h = dist(this.Square, goal);
+        // Admissible heuristic
+        //this.h = dist(this.Square, goal);
+        // Non - Admissible heuristic
+        this.h = 4 * dist(this.Square, goal);
     }
 
     public State(Point sq, Point goal, int st) {
