@@ -1,5 +1,6 @@
-*.class
+*a.asclass
 *.swp
 *.pdf
 *.zip
 tex*
+*.sh
