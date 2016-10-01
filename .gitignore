@@ -1,2 +1,5 @@
 *.class
 *.swp
+*.pdf
+*.zip
+tex*

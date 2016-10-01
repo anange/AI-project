@@ -10,6 +10,7 @@ public class Astar {
     private boolean[][] visited;
     private boolean finalgoal;
     private ArrayList<Point> FirstPath;
+    private int numOfNodes;
 
     private PriorityQueue<State> states;
 
@@ -23,6 +24,7 @@ public class Astar {
         this.m = this.empty[0].length;
         this.visited = new boolean[this.n][this.m];
         this.visited[this.start.x][this.start.y] = true;
+        this.numOfNodes = 1;
 
         Comparator<State> comp = new StateComparator();
         this.states = new PriorityQueue<State>(1000, comp);
@@ -77,8 +79,8 @@ public class Astar {
                     continue;
                 }
                 else if (prev != null && 
-                        x == prev.x && y == prev.y &&
-                        cur.getParent().getSq().x == temp.x && cur.getParent().getSq().y == temp.y) {
+                        x == prev.x && y == prev.y && (cur.getParent() == null ||
+                        cur.getParent().getSq().x == temp.x && cur.getParent().getSq().y == temp.y)) {
                     System.out.println("Conflict -- Danger of crashing");
                     System.out.println("Robot 1 considering new position <" + (x + 1) + "," + (y + 1) +
                                        "> at step " + (cur.getStep() - 1));
@@ -97,7 +99,6 @@ public class Astar {
             }
 
             if (x == goal.x && y == goal.y || (this.finalgoal && manhDist(cur.getSq(), this.goal) == 1)) {
-                //TODO function that builds arraylist to return
                 ArrayList<Point> path = new ArrayList<Point>();
                 temp = cur.getSq();
                 temp.setStep(cur.getStep());
@@ -112,7 +113,6 @@ public class Astar {
                 return path;
             }
             else {
-                 //TODO anything else and test? 
                 findNeighb(cur);
             }
         }
@@ -140,13 +140,17 @@ public class Astar {
             nextSquares[numOfNew] = new Point(x, y-1);
             numOfNew += 1;
         }
+        this.numOfNodes += numOfNew;
         for (int i = 0; i < numOfNew; i++) {
             State temp = new State(cur, nextSquares[i], this.goal);
-            this.visited[nextSquares[i].x][nextSquares[i].y] = true; //valto visited edw?
+            this.visited[nextSquares[i].x][nextSquares[i].y] = true; 
             this.states.add(temp);
         }
     }
     
+    public int getNumOfNodes() {
+        return this.numOfNodes;
+    }
     private static int manhDist(Point a, Point b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }

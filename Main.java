@@ -65,13 +65,12 @@ public class Main {
         }
         sortMidpoints(start1, midpoints, numOfMids);
         int step = 0;
+        int nodes;
         boolean fingoal = false;
         ArrayList<Point> FirstPath;
         Astar astar = new Astar(start1, midpoints[0], fingoal, step, empty, null);
         FirstPath = astar.solve();
-        /*for (i = 0; i < FirstPath.size(); i++)
-            System.out.println(FirstPath.get(i).x + 1 + " " + (FirstPath.get(i).y + 1));
-        */
+        nodes = astar.getNumOfNodes();
         
         for (i = 1; i <= numOfMids; i++) {
 
@@ -83,15 +82,16 @@ public class Main {
             FirstPath.remove(FirstPath.size() - 1);
             astar = new Astar(midpoints[i-1], temp, fingoal, step, empty, null);
             FirstPath.addAll(astar.solve());
+            nodes += astar.getNumOfNodes();
         }
         
-                sortMidpoints(start2, midpoints, numOfMids);
+        sortMidpoints(start2, midpoints, numOfMids);
         step = 0;
         ArrayList<Point> SecPath;
         astar = new Astar(start2, midpoints[0], fingoal, step, empty, FirstPath);
         SecPath = astar.solve();
+        nodes += astar.getNumOfNodes();
         for (i = 1; i <= numOfMids; i++) {
-
             if (i == numOfMids) {
                 fingoal = true;
                 temp = goal;
@@ -102,6 +102,7 @@ public class Main {
             SecPath.remove(SecPath.size() - 1);
             astar = new Astar(midpoints[i-1], temp, fingoal, step, empty, FirstPath);
             SecPath.addAll(astar.solve());
+            nodes += astar.getNumOfNodes();
         }
        
         ArrayList<Point> FirstPathBack, SecPathBack;
@@ -110,9 +111,11 @@ public class Main {
                         SecPath.get(SecPath.size() - 1).getStep());
         astar = new Astar(goal, start1, fingoal, step, empty, null);
         FirstPathBack = astar.solve();
+        nodes += astar.getNumOfNodes();
         astar = new Astar(SecPath.get(SecPath.size() - 1),
                           start2, fingoal, step, empty, FirstPathBack);
         SecPathBack = astar.solve();
+        nodes += astar.getNumOfNodes();
         System.out.println("First Robot | Second Robot | Step");
         for (i = 0; i <= step; i++) {
             if (i >= FirstPath.size())
@@ -121,16 +124,24 @@ public class Main {
                 System.out.print("    (" + (FirstPath.get(i).x + 1) + "," + (FirstPath.get(i).y + 1) + ")   ");
             
             if (i >= SecPath.size())
-                System.out.println(" Wait for 1st" + SecPath.get(i).getStep());
+                System.out.println(" Wait for 1st      " + i);
             else if (i > 0 && SecPath.get(i).getStep() - SecPath.get(i).getStep() > 1) 
-                System.out.println("    Stalling    " + SecPath.get(i).getStep());
+                System.out.println("    Stalling    " + i);
             else
-                System.out.println("     (" + (SecPath.get(i).x + 1) + " " + (SecPath.get(i).y + 1) + ")" + "         " + SecPath.get(i).getStep());
+                System.out.println("     (" + (SecPath.get(i).x + 1) + " " + (SecPath.get(i).y + 1) + ")" + "         " + i);
         }
-        for (i = 1; i < FirstPathBack.size(); i++) {
-           System.out.print("    (" + (FirstPathBack.get(i).x + 1) + "," + (FirstPathBack.get(i).y + 1) + ")   ");
-           System.out.println("     (" + (SecPathBack.get(i).x + 1) + " " + (SecPathBack.get(i).y + 1) + ")" + "         " + SecPathBack.get(i).getStep());
+        int end = Math.max(FirstPathBack.size(), SecPathBack.size());
+        for (i = 1; i < end; i++) {
+           if (i >= FirstPathBack.size())
+               System.out.print("Wait for 2nd");
+            else 
+               System.out.print("    (" + (FirstPathBack.get(i).x + 1) + "," + (FirstPathBack.get(i).y + 1) + ")   ");
+            if (i >= SecPathBack.size())
+                System.out.println(" Wait for 1st      " + (step + i));
+            else
+                System.out.println("     (" + (SecPathBack.get(i).x + 1) + " " + (SecPathBack.get(i).y + 1) + ")" + "         " + (step + i));
         }
+        System.out.println("Number of nodes: " +  nodes);
     }           
     
     private static String[] read(BufferedReader r) {

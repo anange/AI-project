@@ -6,21 +6,17 @@ public class State {
     private State parent;
     private int step;
     private int h;
-    private int g; //Always same as step :(
-    
-    //Is it really needed?
-    private ArrayList<State> children;  
-    
-    // Point passes a reference - be careful with that
+    private int g; 
+
     public State(State par, Point sq, Point goal) {
         this.parent = par;
         this.Square = sq;
         this.g = this.parent.getStep() + 1;
         this.step = this.g;
         // Admissible heuristic
-        //this.h = dist(this.Square, goal);
+        this.h = dist(this.Square, goal);
         // Non - Admissible heuristic
-        this.h = 4 * dist(this.Square, goal);
+        //this.h = 5 * dist(this.Square, goal);
     }
 
     public State(Point sq, Point goal, int st) {
