@@ -1,0 +1,25 @@
+** Conflict **
+Robot 1 considering new position <2,3> at step 1
+Robot 2 considering new position <2,3> at step 1
+Resolving -- Robot 2 considering stalling at step 1
+** End of Conflict **
+Conflict -- Danger of crashing
+Robot 1 considering new position <2,3> at step 1
+Robot 2 considering new position <2,3> at step 2
+Resolving -- Robot 2 considering new alternative position <3,2> at step 1
+** End of Conflict **
+First Robot | Second Robot | Step
+    (1,3)        (3 3)         0
+    (2,3)        (3 2)         1
+    (3,3)        (2 2)         2
+    (3,2)        (2 3)         3
+    (2,2)        (3 3)         4
+    (1,2)        (3 2)         5
+    (1,1)        (2 2)         6
+    (2,1)        (1 2)         7
+    (2,2)        (1 1)         8
+Wait for 2nd     (2 1)         9
+    (1,2)        (3 1)         10
+    (1,3)        (3 2)         11
+Wait for 2nd     (3 3)         12
+Number of nodes: 60
